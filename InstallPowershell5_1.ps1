@@ -1,4 +1,4 @@
-﻿<# 
+<# 
 Modified for Powershell 5.1 by Ben Cleverdon 
 Originally Written By Eric Holzhueter with no implied guarantee it will work
 
@@ -65,7 +65,7 @@ Else{
         [io.compression.zipfile]::ExtractToDirectory($output, $destination)
         
         #Run Install-WMF5.1
-        $command= "$destination\Install-WMF5.ps1" -AcceptEULA
+        $command= "$destination\Install-WMF5.1.ps1" -AcceptEULA
         Invoke-Expression $command
         }
     Else{    
