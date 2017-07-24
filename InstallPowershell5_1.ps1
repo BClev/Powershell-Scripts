@@ -22,13 +22,13 @@ OS version table https://msdn.microsoft.com/en-us/library/windows/desktop/ms7248
 $Arch = (Get-WmiObject -Class Win32_Processor).addresswidth
 $OS = (Get-WmiObject Win32_OperatingSystem).version.split('.')[0]
 $OSMinor = (Get-WmiObject Win32_OperatingSystem).version.split('.')[1]
-$isZip = false
+$isZip = $false
 
 #64 bit OS check
 if($Arch -eq 64){
     if($OS -eq 6 -and $OSMinor -eq 1){$url = "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win7AndW2K8R2-KB3191566-x64.zip"
                                       $file = "Win7AndW2K8R2-KB3191566-x64.zip"
-                                      $isZip = true}
+                                      $isZip = $true}
     if($OS -eq 6 -and $OSMinor -eq 2){$url = "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/W2K12-KB3191565-x64.msu"
                                       $file = "W2K12-KB3191565-x64.msu"}
     if($OS -eq 6 -and $OSMinor -eq 3){$url = "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1AndW2K12R2-KB3191564-x64.msu"
@@ -37,7 +37,7 @@ if($Arch -eq 64){
 elseif($Arch -eq 32){
     if($OS -eq 6 -and $OSMinor -eq 1){$url = "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win7-KB3191566-x86.zip"
                                       $file = "Win7-KB3191566-x86.zip"
-                                      $isZip = true}
+                                      $isZip = $true}
     if($OS -eq 8 -and $OSMinor -eq 3){$url = "https://download.microsoft.com/download/6/F/5/6F5FF66C-6775-42B0-86C4-47D41F2DA187/Win8.1-KB3191564-x86.msu"
                                       $file = "Win8.1-KB3191564-x86.msu"}
 }
@@ -65,12 +65,12 @@ Else{
         [io.compression.zipfile]::ExtractToDirectory($output, $destination)
         
         #Run Install-WMF5.1
-        $command= "$destination\Install-WMF5.1.ps1" -AcceptEULA
+        $command= "$destination\Install-WMF5.1.ps1 -AcceptEULA"
         Invoke-Expression $command
         }
     Else{    
         if(test-path $output){ Write-Output "Installing $file"
-                               & wusa $output /quiet /norestart}
+                               Start-Process wusa -ArgumentList ($output, '/quiet', '/norestart', "/log:$env:HOMEDRIVE\Temp\Wusa.log") -Wait
         else{Write-Warning "File $((Join-Path $output $file)) does not exist"}
       }
 }
