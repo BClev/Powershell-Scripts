@@ -56,6 +56,14 @@ Else{
     #$wc.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f")
     $wc.DownloadFile($url, $output)
     
+    #Find WUSA
+    if (!(Test-Path $env:systemroot\SysWOW64\wusa.exe)){
+        $Wus = "$env:systemroot\System32\wusa.exe"
+    }
+    else {
+      $Wus = "$env:systemroot\SysWOW64\wusa.exe"
+    }
+
     #Unzip Windows 7/Server 2008 using PoSh 3 syntax
     If ($output -match ".zip"){
         
@@ -70,7 +78,7 @@ Else{
         }
     Else{    
         if(test-path $output){ Write-Output "Installing $file"
-                               Start-Process wusa -ArgumentList ($output, '/quiet', '/norestart', "/log:$env:HOMEDRIVE\Temp\Wusa.log") -Wait
+                               Start-Process -FilePath $Wus -ArgumentList ($output, '/quiet', '/norestart') -Wait}
         else{Write-Warning "File $((Join-Path $output $file)) does not exist"}
       }
 }
